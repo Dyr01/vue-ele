@@ -1,6 +1,6 @@
 <template>
   <div>
-    <ele-header></ele-header>
+    <ele-header :seller="seller"></ele-header>
 
     <div class="tab border-1px">
       <div class="tab-item">
@@ -14,15 +14,33 @@
       </div>
     </div>
 
-    <router-view></router-view>
+    <router-view :seller="seller"></router-view>
   </div>
 </template>
 
 <script>
+  import axios from 'axios'
   import header from './components/header/header.vue'
+  const OK = 0 // 正常数据标识
   export default {
+    data () {
+      return {
+        seller: {}
+      }
+    },
     components: {
       'ele-header': header
+    },
+
+    created () {
+      // 使用axios发送ajax请求
+      axios.get('/api/seller')
+        .then(response => {
+          const result = response.data
+          if (result.code === OK) {
+            this.seller = result.data
+          }
+        })
     }
   }
 </script>
