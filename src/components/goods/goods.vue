@@ -1,7 +1,7 @@
 <template>
   <div>
     <div class="goods">
-      <div class="menu-wrapper">
+      <div class="menu-wrapper" ref="menuWrapper">
         <ul>
           <!-- current -->
           <li class="menu-item" v-for="good in goods">
@@ -12,7 +12,7 @@
           </li>
         </ul>
       </div>
-      <div class="foods-wrapper">
+      <div class="foods-wrapper" ref="foodsWrapper">
         <ul>
           <li class="food-list food-list-hook" v-for="good in goods">
             <h1 class="title">{{good.name}}</h1>
@@ -48,6 +48,7 @@
 </template>
 <script>
   import axios from 'axios'
+  import BScroll from 'better-scroll'
   const OK = 0
   export default {
     data () {
@@ -64,8 +65,25 @@
           const result = response.data
           if (result.code === OK) {
             this.goods = result.data
+            // 滚动
+            this.$nextTick(() => {
+              this._initScroll()
+            })
           }
         })
+    },
+    methods: {
+      // 定义滚动
+      _initScroll () {
+        // menu-wrapper的滚动
+        new BScroll(this.$refs.menuWrapper, {
+
+        })
+        // foods-wrapper的滚动
+        new BScroll(this.$refs.foodsWrapper, {
+
+        })
+      }
     }
   }
 </script>
