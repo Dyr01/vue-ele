@@ -3,8 +3,8 @@
     <div class="goods">
       <div class="menu-wrapper" ref="menuWrapper">
         <ul>
-          <!-- current -->
-          <li class="menu-item" v-for="good in goods">
+          <li class="menu-item" v-for="(good, index) in goods"
+              :class="{current: index === currIndex}" @click="clickMenuItem(index)">
             <span class="text border-1px">
               <span class="icon" v-if="good.type>=0" :class="supportClasses[good.type]"></span>
               {{good.name}}
@@ -54,7 +54,9 @@
     data () {
       return {
         goods: [],
-        supportClasses: ['decrease', 'discount', 'guarantee', 'invoice', 'special']
+        supportClasses: ['decrease', 'discount', 'guarantee', 'invoice', 'special'],
+        tops: [],
+        scrollY: 0
       }
     },
 
@@ -68,6 +70,7 @@
             // 滚动
             this.$nextTick(() => {
               this._initScroll()
+              this._initTops()
             })
           }
         })
@@ -77,11 +80,44 @@
       _initScroll () {
         // menu-wrapper的滚动
         new BScroll(this.$refs.menuWrapper, {
-
+          click: true
         })
         // foods-wrapper的滚动
-        new BScroll(this.$refs.foodsWrapper, {
-
+        this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
+          probeType: 3
+        })
+        // 监视foods的滚动
+        this.foodsScroll.on('scroll', (pos) => {
+          this.scrollY = Math.abs(pos.y)
+        })
+      },
+      // 定义tops
+      _initTops () {
+        const tops = []
+        let top = 0
+        tops.push(top)
+        // 找到所有对应的lis
+        const lis = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        for (var i = 0; i < lis.length; i++) {
+          var li = lis[i]
+          top += li.clientHeight
+          tops.push(top)
+        }
+        this.tops = tops
+      },
+      // 点击变换
+      clickMenuItem (index) {
+        const lis = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
+        const li = lis[index]
+        this.foodsScroll.scrollToElement(li, 300)
+      }
+    },
+    computed: {
+      // 滚动计算
+      currIndex () {
+        const {tops, scrollY} = this
+        return tops.findIndex((top, index) => {
+          return scrollY >= top && scrollY < tops[index + 1]
         })
       }
     }
