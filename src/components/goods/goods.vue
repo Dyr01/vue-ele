@@ -4,7 +4,7 @@
       <div class="menu-wrapper" ref="menuWrapper">
         <ul>
           <li class="menu-item" v-for="(good, index) in goods"
-              :class="{current: index === currIndex}" @click="clickMenuItem(index)">
+              :class="{current: index === currIndex}" @click="clickMenuItem(index, $event)">
             <span class="text border-1px">
               <span class="icon" v-if="good.type>=0" :class="supportClasses[good.type]"></span>
               {{good.name}}
@@ -106,7 +106,11 @@
         this.tops = tops
       },
       // 点击变换
-      clickMenuItem (index) {
+      clickMenuItem (index, event) {
+        // 过滤原生事件的回调
+        if (!event._constructed) {
+          return
+        }
         const lis = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
         const li = lis[index]
         this.foodsScroll.scrollToElement(li, 300)
