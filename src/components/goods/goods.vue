@@ -41,7 +41,8 @@
           </li>
         </ul>
       </div>
-      <!--<div>shopcart组件</div>-->
+      <shopcart :delivery-price="seller.deliveryPrice" :min-price="seller.minPrice"
+                :foods="selectFoods" :update-food-count="updateFoodCount"></shopcart>
     </div>
     <div v-show="false">food组件</div>
   </div>
@@ -50,9 +51,13 @@
   import axios from 'axios'
   import BScroll from 'better-scroll'
   import cartcontrol from '../cartcontrol/cartcontrol.vue'
+  import shopcart from '../shopcart/shopcart.vue'
 
   const OK = 0
   export default {
+    props: {
+      seller: Object
+    },
     data () {
       return {
         goods: [],
@@ -61,7 +66,6 @@
         scrollY: 0
       }
     },
-
     created () {
       // 使用axios发送ajax请求
       axios.get('/api/goods')
@@ -144,10 +148,22 @@
         return tops.findIndex((top, index) => {
           return scrollY >= top && scrollY < tops[index + 1]
         })
+      },
+      selectFoods () {
+        const foods = []
+        this.goods.forEach(good => {
+          good.foods.forEach((food) => {
+            if (food.count) {
+              foods.push(food)
+            }
+          })
+        })
+        return foods
       }
     },
     components: {
-      cartcontrol
+      cartcontrol,
+      shopcart
     }
   }
 </script>
