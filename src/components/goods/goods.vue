@@ -33,7 +33,7 @@
                     <span class="old" v-show="food.oldPrice">￥{{food.oldPrice}}</span>
                   </div>
                   <div class="cartcontrol-wrapper">
-                    cartcontrol组件
+                    <cartcontrol :food="food" :update-food-count="updateFoodCount"></cartcontrol>
                   </div>
                 </div>
               </li>
@@ -49,6 +49,8 @@
 <script>
   import axios from 'axios'
   import BScroll from 'better-scroll'
+  import cartcontrol from '../cartcontrol/cartcontrol.vue'
+
   const OK = 0
   export default {
     data () {
@@ -84,7 +86,8 @@
         })
         // foods-wrapper的滚动
         this.foodsScroll = new BScroll(this.$refs.foodsWrapper, {
-          probeType: 3
+          probeType: 3,
+          click: true
         })
         // 监视foods的滚动
         this.foodsScroll.on('scroll', (pos) => {
@@ -114,6 +117,24 @@
         const lis = this.$refs.foodsWrapper.getElementsByClassName('food-list-hook')
         const li = lis[index]
         this.foodsScroll.scrollToElement(li, 300)
+      },
+      // cartcontrol组件
+      updateFoodCount (food, isAdd, event) {
+        if (!event._constructed) {
+          return
+        }
+        if (isAdd) {
+          if (!food.count) {
+//            food.count = 1
+            this.$set(food, 'count', 1)
+          } else {
+            food.count++
+          }
+        } else {
+          if (food.count) {
+            food.count--
+          }
+        }
       }
     },
     computed: {
@@ -124,6 +145,9 @@
           return scrollY >= top && scrollY < tops[index + 1]
         })
       }
+    },
+    components: {
+      cartcontrol
     }
   }
 </script>
